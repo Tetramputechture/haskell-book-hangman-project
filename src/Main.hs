@@ -24,7 +24,7 @@ gameWords = do
 
 randomWord :: WordList -> IO String
 randomWord wl = do
-  randomIndex <- randomRIO (0, length WordList)
+  randomIndex <- randomRIO (0, length wl)
   return $ wl !! randomIndex
 
 randomWord' :: IO String
