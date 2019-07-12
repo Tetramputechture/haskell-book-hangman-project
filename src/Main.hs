@@ -22,6 +22,14 @@ gameWords = do
           in      l >= minWordLength
               &&  l <  maxWordLength
 
+randomWord :: WordList -> IO String
+randomWord wl = do
+  randomIndex <- randomRIO (0, length WordList)
+  return $ wl !! randomIndex
+
+randomWord' :: IO String
+randomWord' = gameWords >>= randomWord
+
 main :: IO ()
 main = do
   putStrLn "hello world"
