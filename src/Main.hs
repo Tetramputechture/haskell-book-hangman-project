@@ -2,6 +2,9 @@ module Main where
 
 type WordList = [String]
 
+data Puzzle =
+  Puzzle String [Maybe Char] [Char]
+
 allWords :: IO WordList
 allWords = do
   dict <- readFile "data/dict.txt"
