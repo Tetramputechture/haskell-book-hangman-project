@@ -89,8 +89,8 @@ gameWin (Puzzle _ filledInSoFar _) =
 
 runGame :: Puzzle -> IO ()
 runGame puzzle = forever $ do
-  gameOver puzzle
   gameWin puzzle
+  gameOver puzzle
   putStrLn $
     "Current puzzle is: " ++ show puzzle
   putStr "Guess a letter: "
@@ -110,7 +110,7 @@ minWordLength :: Int
 minWordLength = 5
 
 maxWordLength :: Int
-maxWordLength = 9
+maxWordLength = 7
 
 gameWords :: IO WordList
 gameWords = do
