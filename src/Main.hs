@@ -1,9 +1,48 @@
 module Main where
 
+import Control.Monad (forever)
+import Data.Char (toLower)
+import Data.Maybe (isJust)
+import Data.List (intersperse)
+import System.Exit (exitSuccess)
+import System.Random (randomRIO)
+
 type WordList = [String]
 
 data Puzzle =
   Puzzle String [Maybe Char] [Char]
+
+instance Show Puzzle where
+  show (Puzzle _ discovered guessed) =
+    (intersperse ' ' $
+     fmap renderPuzzleChar discovered)
+    ++ " Guessed so far: " ++ guessed
+
+freshPuzzle :: String -> Puzzle
+freshPuzzle str = Puzzle str undiscovered []
+  where undiscovered = map (\x -> Nothing) str
+
+charInWord :: Puzzle -> Char -> Bool
+charInWord (Puzzle str _ _) c = elem c str
+
+alreadyGuessed :: Puzzle -> Char -> Bool
+alreadyGuessed (Puzzle _ _ guessed) c = elem c guessed
+
+renderPuzzleChar :: Maybe Char -> Char
+renderPuzzleChar Nothing = '_'
+renderPuzzleChar (Just c) = c
+
+fillInCharacter :: Puzzle -> Char -> Puzzle
+fillInCharacter (Puzzle word
+                 filledInSoFar s) c = 
+  Puzzle word newFilledInSoFar (c : s)
+  where zipper guessed wordChar guessChar =
+          if wordChar == guessed 
+          then Just wordChar
+          else guessChar
+      newFilledInSoFar =
+        zipWith (zipper c)
+          word filledInSofar
 
 allWords :: IO WordList
 allWords = do
