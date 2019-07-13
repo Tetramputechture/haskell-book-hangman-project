@@ -16,10 +16,11 @@ data Puzzle =
   Puzzle String [Maybe Char] [Char]
 
 instance Show Puzzle where
-  show (Puzzle _ discovered guessed) =
+  show pzl@(Puzzle _ discovered guessed) =
     (intersperse ' ' $
      fmap renderPuzzleChar discovered)
     ++ "\nGuessed so far: " ++ guessed
+    ++ drawHangman pzl
 
 freshPuzzle :: String -> Puzzle
 freshPuzzle str = Puzzle str undiscovered []
@@ -34,6 +35,20 @@ alreadyGuessed (Puzzle _ _ guessed) c = elem c guessed
 renderPuzzleChar :: Maybe Char -> Char
 renderPuzzleChar Nothing = '_'
 renderPuzzleChar (Just c) = c
+
+drawHangman :: Puzzle -> String
+drawHangman pzl = drawHangman' $ incorrectGuesses pzl
+
+drawHangman' :: Int -> String
+drawHangman' 0 = "\n--|"
+drawHangman' x = drawHangman' (x - 1) ++ str x
+  where str 1 = "\n  O"
+        str 2 = "\n -"
+        str 3 = "|"
+        str 4 = "-"
+        str 5 = "\n /"
+        str 6 = " \\"
+        str _ = ""
 
 fillInCharacter :: Puzzle -> Char -> Puzzle
 fillInCharacter (Puzzle word
@@ -73,7 +88,7 @@ incorrectGuesses (Puzzle _ discovered guessed) =
 
 gameOver :: Puzzle -> IO ()
 gameOver pzl@(Puzzle wordToGuess _ guessed) =
-  if (incorrectGuesses pzl) > 7 then
+  if (incorrectGuesses pzl) > 6 then
     do putStrLn "You lose!"
        putStrLn $
          "The word was: " ++ wordToGuess
@@ -110,7 +125,7 @@ minWordLength :: Int
 minWordLength = 5
 
 maxWordLength :: Int
-maxWordLength = 7
+maxWordLength = 6
 
 gameWords :: IO WordList
 gameWords = do
