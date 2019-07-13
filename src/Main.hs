@@ -40,9 +40,9 @@ fillInCharacter (Puzzle word
           if wordChar == guessed 
           then Just wordChar
           else guessChar
-      newFilledInSoFar =
-        zipWith (zipper c)
-          word filledInSofar
+        newFilledInSoFar =
+          zipWith (zipper c)
+            word filledInSoFar
 
 handleGuess :: Puzzle -> Char -> IO Puzzle
 handleGuess puzzle guess = do
@@ -77,7 +77,7 @@ gameWin :: Puzzle -> IO ()
 gameWin (Puzzle _ filledInSoFar _) =
   if all isJust filledInSoFar then
     do putStrLn "You win!"
-      exitSuccess
+       exitSuccess
   else return ()
 
 runGame :: Puzzle -> IO ()
@@ -124,4 +124,7 @@ randomWord' = gameWords >>= randomWord
 
 main :: IO ()
 main = do
-  putStrLn "hello worlddd"
+  word <- randomWord'
+  let puzzle =
+        freshPuzzle (fmap toLower word)
+  runGame puzzle
