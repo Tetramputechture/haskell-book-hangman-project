@@ -6,6 +6,7 @@ import Data.Maybe (isJust)
 import Data.List (intersperse)
 import System.Exit (exitSuccess)
 import System.Random (randomRIO)
+import System.IO
 
 newtype WordList =
   WordList [String]
@@ -18,7 +19,7 @@ instance Show Puzzle where
   show (Puzzle _ discovered guessed) =
     (intersperse ' ' $
      fmap renderPuzzleChar discovered)
-    ++ " Guessed so far: " ++ guessed
+    ++ "\nGuessed so far: " ++ guessed
 
 freshPuzzle :: String -> Puzzle
 freshPuzzle str = Puzzle str undiscovered []
@@ -66,9 +67,13 @@ handleGuess puzzle guess = do
               \ the word, try again."
       return (fillInCharacter puzzle guess)
 
+incorrectGuesses :: Puzzle -> Int
+incorrectGuesses (Puzzle _ discovered guessed) =
+  length guessed - (length $ filter isJust discovered)
+
 gameOver :: Puzzle -> IO ()
-gameOver (Puzzle wordToGuess _ guessed) =
-  if (length guessed) > 7 then
+gameOver pzl@(Puzzle wordToGuess _ guessed) =
+  if (incorrectGuesses pzl) > 7 then
     do putStrLn "You lose!"
        putStrLn $
          "The word was: " ++ wordToGuess
@@ -126,6 +131,7 @@ randomWord' = gameWords >>= randomWord
 
 main :: IO ()
 main = do
+  hSetBuffering stdout NoBuffering
   word <- randomWord'
   let puzzle =
         freshPuzzle (fmap toLower word)
